@@ -1,0 +1,1485 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://gmd.ceitec.cz/schema/GROMACS-2025-1.schema.json",
+  "title": "GROMACS Simulation Schema",
+  "description": "This schema defines the structure of metadata and parameters used in a GROMACS simulation environment.",
+  "properties": {
+    "administrative": {
+      "properties": {
+        "title": {
+          "title": "Title of the dataset",
+          "type": "string"
+        },
+        "creator": {
+          "description": "ORCIDs are encouraged",
+          "title": "Creator of the dataset or data curator",
+          "type": "string"
+        },
+        "publishing_institution": {
+          "description": "Institution that published the dataset. Use the ROR ID (https://ror.org/) if available",
+          "title": "Publishing Institution",
+          "type": "string"
+        },
+        "publication_year": {
+          "title": "Publication Year",
+          "type": "integer"
+        },
+        "identifier": {
+          "description": "DOI or other identifier",
+          "title": "Identifier",
+          "type": "string"
+        },
+        "software_information": {
+          "type": "object",
+          "title": "Software Information",
+          "description": "Details of the software environment used to perform the simulation.",
+          "properties": {
+            "software": {
+              "type": "string",
+              "title": "Software Name",
+              "description": "Name of the molecular dynamics package (e.g., 'GROMACS')."
+            },
+            "version": {
+              "type": "string",
+              "title": "Software Version",
+              "description": "Version of the software used (e.g., '2023.1')."
+            }
+          }
+        }
+      },
+      "type": "object"
+    },
+    "simulated_object": {
+      "properties": {
+        "protein_id": {
+          "title": "Protein Identification",
+          "description": "Enter either the PDB ID or the Uniprot ID, more than one protein can be entered",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "title": "Identifier Source",
+                "type": "string",
+                "enum": ["PDB ID", "Uniprot ID"]
+              },
+              "identifier": {
+                "title": "Structure ID",
+                "type": "string"
+              }
+            },
+            "required": ["type", "identifier"]
+          }
+        },
+        "ligand_id": {
+          "title": "Ligand Identification",
+          "description": "Enter a ligand identifier from a recognized database",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "title": "Identifier Source",
+                "type": "string",
+                "enum": [
+                  "PDB Ligand ID",
+                  "PubChem CID",
+                  "ChEMBL ID",
+                  "DrugBank ID",
+                  "ZINC ID",
+                  "HMDB ID",
+                  "KEGG Compound ID"
+                ]
+              },
+              "identifier": {
+                "title": "Ligand ID",
+                "type": "string"
+              }
+            },
+            "required": ["type", "identifier"]
+          }
+        },
+        "solvent": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "title": "Solvent Type",
+              "type": "string",
+              "enum": ["Water", "Water and Ions", "Water and Organic Solvent", "Other"]
+            },
+            "name": {
+              "title": "Solvent Name",
+              "type": "string"
+            },
+            "concentration": {
+              "title": "Solvent Concentration",
+              "description": "Concentration of the solvent in the simulation box in mol/L",
+              "type": "number"
+            }
+          }
+        }
+      },
+      "type": "object"
+    },
+    "simulation": {
+      "type": "object",
+      "title": "Simulation Level Data",
+      "description": "Contains GROMACS simulation parameters (mdp fields), including force fields and input records.",
+      "properties": {
+        "forcefield": {
+          "type": "string",
+          "title": "Force Field",
+          "description": "Specifies the force field used for the simulation (e.g., 'AMBER99SB', 'CHARMM36', etc.)."
+        },
+        "filename": {
+          "type": "string",
+          "title": "Filename",
+          "description": "A reference to the primary GROMACS input or configuration file name."
+        },
+        "inputrec": {
+          "type": "object",
+          "title": "MDP Input Record",
+          "description": "Collection of GROMACS parameters typically found in an .mdp file.",
+          "properties": {
+            "integrator": {
+              "type": "string",
+              "title": "Integrator",
+              "description": "Defines the type of integrator (e.g., 'md', 'sd', 'md-vv', etc.)."
+            },
+            "tinit": {
+              "type": "number",
+              "title": "Initial Time",
+              "description": "Sets the starting time (in ps) of the simulation."
+            },
+            "dt": {
+              "type": "number",
+              "title": "Time Step",
+              "description": "Integration time step in picoseconds."
+            },
+            "nsteps": {
+              "type": "integer",
+              "title": "Number of Steps",
+              "description": "Total number of simulation steps to perform."
+            },
+            "init-step": {
+              "type": "integer",
+              "title": "Initial Step",
+              "description": "Index of the initial step (allows continuation runs)."
+            },
+            "simulation-part": {
+              "type": "integer",
+              "title": "Simulation Part",
+              "description": "Helps GROMACS handle continuation runs by labeling parts of the simulation."
+            },
+            "mts": {
+              "type": "string",
+              "title": "MTS",
+              "description": "Specifies multi-time stepping parameters if used."
+            },
+            "mass-repartition-factor": {
+              "type": "number",
+              "title": "Mass Repartition Factor",
+              "description": "Factor used when repartitioning masses in a simulation."
+            },
+            "comm-mode": {
+              "type": "string",
+              "title": "Center of Mass Communication Mode",
+              "description": "Method for removing center of mass motion (e.g., 'Linear', 'Angular')."
+            },
+            "nstcomm": {
+              "type": "integer",
+              "title": "COM Removal Frequency",
+              "description": "Frequency to remove center of mass motion in steps."
+            },
+            "bd-fric": {
+              "type": "number",
+              "title": "Brownian Dynamics Friction",
+              "description": "Used when integrator is BD; friction constant."
+            },
+            "ld-seed": {
+              "type": "integer",
+              "title": "Random Seed for LD/SD",
+              "description": "Seed for the random number generator used in Langevin/Brownian dynamics."
+            },
+            "emtol": {
+              "type": "number",
+              "title": "Energy Minimization Tolerance",
+              "description": "Convergence criterion for energy minimization."
+            },
+            "emstep": {
+              "type": "number",
+              "title": "EM Step Size",
+              "description": "Step size in energy minimization."
+            },
+            "niter": {
+              "type": "integer",
+              "title": "Number of Iterations",
+              "description": "Used for certain iterative algorithms in energy minimization."
+            },
+            "fcstep": {
+              "type": "integer",
+              "title": "Force Constant Step",
+              "description": "Step for the force constant in energy minimization cycles."
+            },
+            "nstcgsteep": {
+              "type": "integer",
+              "title": "Conjugate Gradient Frequency",
+              "description": "Steps between CG updates in steepest descent minimization."
+            },
+            "nbfgscorr": {
+              "type": "integer",
+              "title": "Number of BFGS Corrections",
+              "description": "Used by BFGS minimization to set the maximum number of corrections."
+            },
+            "rtpi": {
+              "type": "number",
+              "title": "Time between rtp calculations",
+              "description": "Useful parameter in integrator algorithms controlling certain updates."
+            },
+            "nstxout": {
+              "type": "integer",
+              "title": "Position Output Frequency",
+              "description": "Frequency in steps for writing coordinates to trajectory."
+            },
+            "nstvout": {
+              "type": "integer",
+              "title": "Velocity Output Frequency",
+              "description": "Frequency in steps for writing velocities to trajectory."
+            },
+            "nstfout": {
+              "type": "integer",
+              "title": "Force Output Frequency",
+              "description": "Frequency in steps for writing forces to trajectory."
+            },
+            "nstlog": {
+              "type": "integer",
+              "title": "Log Output Frequency",
+              "description": "Frequency in steps for writing to the GROMACS log file."
+            },
+            "nstcalcenergy": {
+              "type": "integer",
+              "title": "Energy Calculation Frequency",
+              "description": "Frequency in steps for calculation of energies."
+            },
+            "nstenergy": {
+              "type": "integer",
+              "title": "Energy Output Frequency",
+              "description": "Frequency in steps for writing energies to the energy file."
+            },
+            "nstxout-compressed": {
+              "type": "integer",
+              "title": "Compressed Trajectory Output Frequency",
+              "description": "Frequency in steps for writing compressed coordinates (xtc)."
+            },
+            "compressed-x-precision": {
+              "type": "integer",
+              "title": "Compressed X Precision",
+              "description": "Precision in bits for compressed trajectories."
+            },
+            "cutoff-scheme": {
+              "type": "string",
+              "title": "Cutoff Scheme",
+              "description": "Method for calculating non-bonded interactions (e.g., 'Verlet', 'group')."
+            },
+            "nstlist": {
+              "type": "integer",
+              "title": "Neighbor List Update Frequency",
+              "description": "Number of steps between construction of the neighbor list."
+            },
+            "pbc": {
+              "type": "string",
+              "title": "Periodic Boundary Conditions",
+              "description": "Dimension(s) along which periodic boundary conditions are applied."
+            },
+            "periodic-molecules": {
+              "type": "string",
+              "title": "Periodic Molecules",
+              "description": "Whether molecules are treated as periodic objects."
+            },
+            "verlet-buffer-tolerance": {
+              "type": "number",
+              "title": "Verlet Buffer Tolerance",
+              "description": "Controls size of the buffered pair list in Verlet scheme."
+            },
+            "verlet-buffer-pressure-tolerance": {
+              "type": "number",
+              "title": "Verlet Buffer Pressure Tolerance",
+              "description": "Allows for a dynamic pair-list resizing under pressure coupling."
+            },
+            "rlist": {
+              "type": "number",
+              "title": "Neighbor List Cutoff",
+              "description": "Cutoff for the neighbor list in nm."
+            },
+            "coulombtype": {
+              "type": "string",
+              "title": "Coulomb Type",
+              "description": "Treatment of long-range electrostatics (e.g., 'PME', 'Reaction-Field', 'Cut-off')."
+            },
+            "coulomb-modifier": {
+              "type": "string",
+              "title": "Coulomb Modifier",
+              "description": "Modifier for the Coulomb potential (e.g., 'Potential-shift')."
+            },
+            "rcoulomb-switch": {
+              "type": "number",
+              "title": "Coulomb Switch Distance",
+              "description": "Distance at which the Coulomb potential begins switching."
+            },
+            "rcoulomb": {
+              "type": "number",
+              "title": "Coulomb Cutoff",
+              "description": "Distance at which the Coulomb potential is truncated or switched."
+            },
+            "epsilon-r": {
+              "type": "number",
+              "title": "Dielectric Constant",
+              "description": "Relative dielectric constant of the medium."
+            },
+            "epsilon-rf": {
+              "type": "string",
+              "title": "Reaction-Field Dielectric",
+              "description": "Value of the dielectric constant used for reaction-field calculations."
+            },
+            "vdw-type": {
+              "type": "string",
+              "title": "van der Waals Type",
+              "description": "Method for treating van der Waals interactions (e.g., 'Cut-off', 'Shift')."
+            },
+            "vdw-modifier": {
+              "type": "string",
+              "title": "van der Waals Modifier",
+              "description": "Modifier for the vdw potential (e.g., 'Potential-shift')."
+            },
+            "rvdw-switch": {
+              "type": "number",
+              "title": "VdW Switch Distance",
+              "description": "Distance at which the van der Waals potential starts to switch."
+            },
+            "rvdw": {
+              "type": "number",
+              "title": "VdW Cutoff",
+              "description": "Distance at which the van der Waals potential is truncated or switched."
+            },
+            "DispCorr": {
+              "type": "string",
+              "title": "Dispersion Correction",
+              "description": "Choice of dispersion correction (e.g., 'EnerPres', 'No')."
+            },
+            "table-extension": {
+              "type": "number",
+              "title": "Table Extension",
+              "description": "Extension of lookup tables beyond the cutoff for custom interactions."
+            },
+            "fourierspacing": {
+              "type": "number",
+              "title": "Fourier Spacing",
+              "description": "Grid spacing for PME in nm."
+            },
+            "fourier-nx": {
+              "type": "integer",
+              "title": "PME Grid Points (X)",
+              "description": "Number of x-direction grid points for PME."
+            },
+            "fourier-ny": {
+              "type": "integer",
+              "title": "PME Grid Points (Y)",
+              "description": "Number of y-direction grid points for PME."
+            },
+            "fourier-nz": {
+              "type": "integer",
+              "title": "PME Grid Points (Z)",
+              "description": "Number of z-direction grid points for PME."
+            },
+            "pme-order": {
+              "type": "integer",
+              "title": "PME Interpolation Order",
+              "description": "Order of the interpolation for PME (e.g., 4)."
+            },
+            "ewald-rtol": {
+              "type": "number",
+              "title": "Ewald Tolerance",
+              "description": "Accuracy tolerance for Ewald summation or PME."
+            },
+            "ewald-rtol-lj": {
+              "type": "number",
+              "title": "Ewald Tolerance (LJ)",
+              "description": "Accuracy tolerance for LJ-PME or Ewald correction for LJ."
+            },
+            "lj-pme-comb-rule": {
+              "type": "string",
+              "title": "LJ PME Combination Rule",
+              "description": "Defines how combining rules for LJ interactions are handled under PME."
+            },
+            "ewald-geometry": {
+              "type": "string",
+              "title": "Ewald Geometry",
+              "description": "Geometry used for Ewald summation (e.g., '3d', '3dc')."
+            },
+            "epsilon-surface": {
+              "type": "number",
+              "title": "Surface Dielectric Constant",
+              "description": "Effective dielectric at the surface for Ewald-based methods."
+            },
+            "ensemble-temperature-setting": {
+              "type": "string",
+              "title": "Temperature Setting",
+              "description": "Description of how temperature is controlled (e.g., 'Berendsen', 'Nose-Hoover')."
+            },
+            "ensemble-temperature": {
+              "type": "number",
+              "title": "Ensemble Temperature",
+              "description": "Target temperature for the system in Kelvin."
+            },
+            "tcoupl": {
+              "type": "string",
+              "title": "Temperature Coupling",
+              "description": "Temperature coupling algorithm (e.g., 'V-rescale', 'Nose-Hoover')."
+            },
+            "nsttcouple": {
+              "type": "integer",
+              "title": "Temp. Coupling Frequency",
+              "description": "Number of steps between temperature coupling updates."
+            },
+            "nh-chain-length": {
+              "type": "integer",
+              "title": "Nose-Hoover Chain Length",
+              "description": "Number of thermostats in the Nose-Hoover chain."
+            },
+            "print-nose-hoover-chain-variables": {
+              "type": "string",
+              "title": "Print NH Chain Variables",
+              "description": "If 'yes', prints Nose-Hoover chain variables in the log."
+            },
+            "pcoupl": {
+              "type": "string",
+              "title": "Pressure Coupling",
+              "description": "Pressure coupling algorithm (e.g., 'Berendsen', 'Parrinello-Rahman')."
+            },
+            "pcoupltype": {
+              "type": "string",
+              "title": "Pressure Coupling Type",
+              "description": "Defines isotropic, semi-isotropic, or anisotropic coupling."
+            },
+            "nstpcouple": {
+              "type": "integer",
+              "title": "Pressure Coupling Frequency",
+              "description": "Number of steps between pressure coupling updates."
+            },
+            "tau-p": {
+              "type": "number",
+              "title": "Pressure Time Constant",
+              "description": "Coupling time constant for pressure regulation."
+            },
+            "compressibility (3x3)": {
+              "type": "array",
+              "title": "Compressibility Matrix",
+              "description": "3x3 matrix describing compressibility for each dimension.",
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "minItems": 3,
+                "maxItems": 3
+              },
+              "minItems": 3,
+              "maxItems": 3
+            },
+            "ref-p (3x3)": {
+              "type": "array",
+              "title": "Reference Pressure Matrix",
+              "description": "3x3 matrix specifying reference pressure(s) in each dimension.",
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "minItems": 3,
+                "maxItems": 3
+              },
+              "minItems": 3,
+              "maxItems": 3
+            },
+            "refcoord-scaling": {
+              "type": "string",
+              "title": "Reference Coordinate Scaling",
+              "description": "Determines how coordinates are scaled under pressure coupling."
+            },
+            "posres-coms": {
+              "type": "array",
+              "title": "Position Restraints (Coms)",
+              "description": "3-element array for controlling positions via center of mass restraints.",
+              "items": {
+                "type": "number"
+              },
+              "minItems": 3,
+              "maxItems": 3
+            },
+            "posres-comBs": {
+              "type": "array",
+              "title": "Position Restraints (ComBs)",
+              "description": "3-element array for controlling positions of another group via center of mass restraints.",
+              "items": {
+                "type": "number"
+              },
+              "minItems": 3,
+              "maxItems": 3
+            },
+            "QMMM": {
+              "type": "string",
+              "title": "QMMM",
+              "description": "Flag indicating quantum mechanics/molecular mechanics approach usage."
+            }
+          }
+        },
+        "qm-opts": {
+          "type": "object",
+          "title": "Quantum Mechanics Options",
+          "description": "Additional parameters for QM or hybrid QM/MM simulations in GROMACS.",
+          "properties": {
+            "ngQM": {
+              "type": "integer",
+              "title": "Number of QM Groups",
+              "description": "Defines how many groups are treated quantum mechanically."
+            },
+            "constraint-algorithm": {
+              "type": "string",
+              "title": "Constraint Algorithm",
+              "description": "Algorithm for constraints (e.g., 'LINCS', 'SHAKE')."
+            },
+            "continuation": {
+              "type": "string",
+              "title": "Continuation Run",
+              "description": "Specifies if this run is a continuation from a previous simulation."
+            },
+            "Shake-SOR": {
+              "type": "string",
+              "title": "Shake-SOR",
+              "description": "Option to use successive over-relaxation with SHAKE constraints."
+            },
+            "shake-tol": {
+              "type": "number",
+              "title": "Shake Tolerance",
+              "description": "Tolerance level for the SHAKE algorithm."
+            },
+            "lincs-order": {
+              "type": "integer",
+              "title": "LINCS Order",
+              "description": "Expansion order used in the LINCS constraint algorithm."
+            },
+            "lincs-iter": {
+              "type": "integer",
+              "title": "LINCS Iterations",
+              "description": "Number of iterative correction steps in LINCS."
+            },
+            "lincs-warnangle": {
+              "type": "number",
+              "title": "LINCS Warning Angle",
+              "description": "Threshold angle for issuing LINCS warnings."
+            },
+            "nwall": {
+              "type": "integer",
+              "title": "Number of Walls",
+              "description": "Controls the inclusion of walls in the simulation box."
+            },
+            "wall-type": {
+              "type": "string",
+              "title": "Wall Type",
+              "description": "Defines the wall potential type."
+            },
+            "wall-r-linpot": {
+              "type": "number",
+              "title": "Wall Linear Pot. Radius",
+              "description": "Distance threshold for linearization in wall potential."
+            },
+            "wall-atomtype[0]": {
+              "type": "integer",
+              "title": "Wall Atom Type 0",
+              "description": "Atom type used to represent wall 0."
+            },
+            "wall-atomtype[1]": {
+              "type": "integer",
+              "title": "Wall Atom Type 1",
+              "description": "Atom type used to represent wall 1."
+            },
+            "wall-density[0]": {
+              "type": "number",
+              "title": "Wall Density 0",
+              "description": "Density of wall 0."
+            },
+            "wall-density[1]": {
+              "type": "number",
+              "title": "Wall Density 1",
+              "description": "Density of wall 1."
+            },
+            "wall-ewald-zfac": {
+              "type": "number",
+              "title": "Wall Ewald Z-Factor",
+              "description": "Factor used in Ewald summation for walls."
+            },
+            "pull": {
+              "type": "string",
+              "title": "Pull Code",
+              "description": "Option to activate pulling simulations (umbrella sampling, steered MD, etc.)."
+            },
+            "awh": {
+              "type": "string",
+              "title": "AWH",
+              "description": "Activated weight histogram method for free energy calculations."
+            },
+            "rotation": {
+              "type": "string",
+              "title": "Rotation",
+              "description": "Allows rotating constraints or biasing in free energy calculations."
+            },
+            "interactiveMD": {
+              "type": "string",
+              "title": "Interactive MD",
+              "description": "Specifies if the simulation is run in interactive mode."
+            },
+            "disre": {
+              "type": "string",
+              "title": "Distance Restraints",
+              "description": "Controls whether distance restraints are used."
+            },
+            "disre-weighting": {
+              "type": "string",
+              "title": "Distance Restraints Weighting",
+              "description": "Describes how distance restraints are weighted."
+            },
+            "disre-mixed": {
+              "type": "string",
+              "title": "Distance Restraints Mixed",
+              "description": "Combines multiple distance restraints in a single potential if set."
+            },
+            "dr-fc": {
+              "type": "number",
+              "title": "Distance Restraint Force Constant",
+              "description": "Force constant used for distance restraints."
+            },
+            "dr-tau": {
+              "type": "number",
+              "title": "Distance Restraint Time Constant",
+              "description": "Time constant for exponential averaging in distance restraints."
+            },
+            "nstdisreout": {
+              "type": "integer",
+              "title": "Distance Restraint Output Frequency",
+              "description": "Number of steps between writing distance restraint data."
+            },
+            "orire-fc": {
+              "type": "number",
+              "title": "Orientation Restraint Force Constant",
+              "description": "Force constant for orientation restraints."
+            },
+            "orire-tau": {
+              "type": "number",
+              "title": "Orientation Restraint Time Constant",
+              "description": "Time constant for orientation restraint averaging."
+            },
+            "nstorireout": {
+              "type": "integer",
+              "title": "Orientation Restraint Output Frequency",
+              "description": "Number of steps between writing orientation restraint data."
+            },
+            "free-energy": {
+              "type": "string",
+              "title": "Free Energy",
+              "description": "Controls free-energy perturbation or expanded ensemble simulations."
+            },
+            "cos-acceleration": {
+              "type": "number",
+              "title": "Acceleration in Cosine Space",
+              "description": "Used in certain advanced sampling or nonequilibrium methods."
+            },
+            "deform (3x3)": {
+              "type": "array",
+              "title": "Deformation Matrix (3x3)",
+              "description": "3x3 matrix for deforming the simulation box over time.",
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "minItems": 3,
+                "maxItems": 3
+              },
+              "minItems": 3,
+              "maxItems": 3
+            },
+            "simulated-tempering": {
+              "type": "string",
+              "title": "Simulated Tempering",
+              "description": "Flag and parameters for simulated tempering method."
+            },
+            "swapcoords": {
+              "type": "string",
+              "title": "Swap Coordinates",
+              "description": "Coordinates can be swapped between replicas in REMD or other advanced methods."
+            },
+            "userint1": {
+              "type": "integer",
+              "title": "User Integer 1",
+              "description": "Custom user-defined integer parameter 1."
+            },
+            "userint2": {
+              "type": "integer",
+              "title": "User Integer 2",
+              "description": "Custom user-defined integer parameter 2."
+            },
+            "userint3": {
+              "type": "integer",
+              "title": "User Integer 3",
+              "description": "Custom user-defined integer parameter 3."
+            },
+            "userint4": {
+              "type": "integer",
+              "title": "User Integer 4",
+              "description": "Custom user-defined integer parameter 4."
+            },
+            "userreal1": {
+              "type": "number",
+              "title": "User Real 1",
+              "description": "Custom user-defined floating-point parameter 1."
+            },
+            "userreal2": {
+              "type": "number",
+              "title": "User Real 2",
+              "description": "Custom user-defined floating-point parameter 2."
+            },
+            "userreal3": {
+              "type": "number",
+              "title": "User Real 3",
+              "description": "Custom user-defined floating-point parameter 3."
+            },
+            "userreal4": {
+              "type": "number",
+              "title": "User Real 4",
+              "description": "Custom user-defined floating-point parameter 4."
+            },
+            "applied-forces": {
+              "type": "object",
+              "title": "Applied Forces Section",
+              "description": "Contains sub-sections for external/applied forces such as electric fields or density-guided simulations.",
+              "properties": {
+                "electric-field": {
+                  "type": "object",
+                  "title": "Electric Field",
+                  "description": "Definition of applied electric fields in x, y, z directions.",
+                  "properties": {
+                    "x": {
+                      "type": "object",
+                      "title": "Electric Field (X)",
+                      "description": "Parameters for the electric field along the X axis.",
+                      "properties": {
+                        "E0": {
+                          "type": "string",
+                          "title": "Amplitude",
+                          "description": "Field amplitude or magnitude."
+                        },
+                        "omega": {
+                          "type": "string",
+                          "title": "Angular Frequency",
+                          "description": "Frequency for oscillatory electric fields."
+                        },
+                        "t0": {
+                          "type": "string",
+                          "title": "Start Time",
+                          "description": "Time at which the field is turned on."
+                        },
+                        "sigma": {
+                          "type": "string",
+                          "title": "Width Parameter",
+                          "description": "Used if the field has a Gaussian or other shape in time."
+                        }
+                      }
+                    },
+                    "y": {
+                      "type": "object",
+                      "title": "Electric Field (Y)",
+                      "description": "Parameters for the electric field along the Y axis.",
+                      "properties": {
+                        "E0": {
+                          "type": "string",
+                          "title": "Amplitude",
+                          "description": "Field amplitude or magnitude."
+                        },
+                        "omega": {
+                          "type": "string",
+                          "title": "Angular Frequency",
+                          "description": "Frequency for oscillatory electric fields."
+                        },
+                        "t0": {
+                          "type": "string",
+                          "title": "Start Time",
+                          "description": "Time at which the field is turned on."
+                        },
+                        "sigma": {
+                          "type": "string",
+                          "title": "Width Parameter",
+                          "description": "Used if the field has a Gaussian or other shape in time."
+                        }
+                      }
+                    },
+                    "z": {
+                      "type": "object",
+                      "title": "Electric Field (Z)",
+                      "description": "Parameters for the electric field along the Z axis.",
+                      "properties": {
+                        "E0": {
+                          "type": "string",
+                          "title": "Amplitude",
+                          "description": "Field amplitude or magnitude."
+                        },
+                        "omega": {
+                          "type": "string",
+                          "title": "Angular Frequency",
+                          "description": "Frequency for oscillatory electric fields."
+                        },
+                        "t0": {
+                          "type": "string",
+                          "title": "Start Time",
+                          "description": "Time at which the field is turned on."
+                        },
+                        "sigma": {
+                          "type": "string",
+                          "title": "Width Parameter",
+                          "description": "Used if the field has a Gaussian or other shape in time."
+                        }
+                      }
+                    }
+                  }
+                },
+                "density-guided-simulation": {
+                  "type": "object",
+                  "title": "Density Guided Simulation",
+                  "description": "Enables and configures density-guided MD with specified reference density.",
+                  "properties": {
+                    "active": {
+                      "type": "string",
+                      "title": "Active",
+                      "description": "Turns density-guided simulation on or off."
+                    },
+                    "group": {
+                      "type": "string",
+                      "title": "Atom Group",
+                      "description": "Specifies the group of atoms or molecules for density guidance."
+                    },
+                    "similarity-measure": {
+                      "type": "string",
+                      "title": "Similarity Measure",
+                      "description": "Metric used for comparing current and reference densities."
+                    },
+                    "atom-spreading-weight": {
+                      "type": "string",
+                      "title": "Atom Spreading Weight",
+                      "description": "Weight distribution function for atoms in the density grid."
+                    },
+                    "force-constant": {
+                      "type": "string",
+                      "title": "Force Constant",
+                      "description": "Defines the strength of the restraining force based on density."
+                    },
+                    "gaussian-transform-spreading-width": {
+                      "type": "string",
+                      "title": "Spreading Width",
+                      "description": "Width of the Gaussian spread used to construct the density map."
+                    },
+                    "gaussian-transform-spreading-range-in-multiples-of-width": {
+                      "type": "string",
+                      "title": "Spreading Range",
+                      "description": "Extent of the spread around each atom in multiples of the width."
+                    },
+                    "reference-density-filename": {
+                      "type": "string",
+                      "title": "Reference Density Filename",
+                      "description": "Path to the file holding the reference density distribution."
+                    },
+                    "nst": {
+                      "type": "string",
+                      "title": "Update Frequency",
+                      "description": "Frequency (in steps) at which the density force is updated."
+                    },
+                    "normalize-densities": {
+                      "type": "string",
+                      "title": "Normalize Densities",
+                      "description": "Whether to normalize both reference and current densities before comparison."
+                    },
+                    "adaptive-force-scaling": {
+                      "type": "string",
+                      "title": "Adaptive Force Scaling",
+                      "description": "Option to scale the restraining force adaptively."
+                    },
+                    "adaptive-force-scaling-time-constant": {
+                      "type": "string",
+                      "title": "Adaptive Scaling Time Constant",
+                      "description": "Time constant for adjusting the adaptive force scale."
+                    },
+                    "shift-vector": {
+                      "type": "string",
+                      "title": "Shift Vector",
+                      "description": "Vector to shift the reference density in space."
+                    },
+                    "transformation-matrix": {
+                      "type": "string",
+                      "title": "Transformation Matrix",
+                      "description": "Matrix to rotate or scale the reference density."
+                    }
+                  }
+                },
+                "qmmm-cp2k": {
+                  "type": "object",
+                  "title": "QM/MM CP2K Interface",
+                  "description": "Controls the QM/MM interface if using CP2K as the QM engine.",
+                  "properties": {
+                    "active": {
+                      "type": "string",
+                      "title": "Active",
+                      "description": "Turns the QM/MM CP2K interface on or off."
+                    },
+                    "qmgroup": {
+                      "type": "string",
+                      "title": "QM Group",
+                      "description": "Specifies which group of atoms is treated quantum mechanically."
+                    },
+                    "qmmethod": {
+                      "type": "string",
+                      "title": "QM Method",
+                      "description": "The quantum mechanical method or basis set used (in CP2K terms)."
+                    },
+                    "qmfilenames": {
+                      "type": "string",
+                      "title": "QM Filenames",
+                      "description": "Paths or patterns for files needed by CP2K (input, etc.)."
+                    },
+                    "qmcharge": {
+                      "type": "string",
+                      "title": "QM Charge",
+                      "description": "Net charge of the QM region."
+                    },
+                    "qmmultiplicity": {
+                      "type": "string",
+                      "title": "QM Multiplicity",
+                      "description": "Spin multiplicity of the QM system."
+                    }
+                  }
+                },
+                "colvars": {
+                  "type": "object",
+                  "title": "Collective Variables Module",
+                  "description": "Interface to a colvars-like module for advanced sampling (e.g., NAMD colvars).",
+                  "properties": {
+                    "active": {
+                      "type": "string",
+                      "title": "Active",
+                      "description": "Turns the colvars module on or off."
+                    },
+                    "configfile": {
+                      "type": "string",
+                      "title": "Configuration File",
+                      "description": "Specifies the external configuration file for colvars."
+                    },
+                    "seed": {
+                      "type": "string",
+                      "title": "Random Seed",
+                      "description": "Seed for any stochastic processes within colvars."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "grpopts": {
+          "type": "object",
+          "title": "Group Options",
+          "description": "Options for temperature groups and coupling settings.",
+          "properties": {
+            "nrdf": {
+              "type": "array",
+              "title": "Number of Degrees of Freedom (Groups)",
+              "description": "Defines the degrees of freedom per temperature group.",
+              "items": {
+                "type": "number"
+              },
+              "minItems": 2,
+              "maxItems": 2
+            },
+            "ref-t": {
+              "type": "array",
+              "title": "Reference Temperature (Groups)",
+              "description": "Target temperature for each group in Kelvin.",
+              "items": {
+                "type": "number"
+              },
+              "minItems": 2,
+              "maxItems": 2
+            },
+            "tau-t": {
+              "type": "array",
+              "title": "Temperature Coupling Time Constants",
+              "description": "Time constants for temperature coupling of each group in ps.",
+              "items": {
+                "type": "number"
+              },
+              "minItems": 2,
+              "maxItems": 2
+            }
+          }
+        },
+        "annealing": {
+          "type": "array",
+          "title": "Annealing Method (Groups)",
+          "description": "Defines annealing method (e.g., 'single', 'periodic') for temperature groups.",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "annealing-npoints": {
+          "type": "array",
+          "title": "Number of Annealing Points",
+          "description": "Defines how many points are used for each group's annealing schedule.",
+          "items": {
+            "type": "integer"
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "acc": {
+          "type": "array",
+          "title": "Acceleration for Groups",
+          "description": "Acceleration (in nm/ps^2) applied to different groups along x, y, z directions.",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "nfreeze": {
+          "type": "array",
+          "title": "Freeze Groups",
+          "description": "Specifies whether (and how) certain groups are frozen in x, y, z directions.",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "energygrp-flags": {
+          "type": "array",
+          "title": "Energy Group Flags",
+          "description": "Specifies which energy terms to store or print for certain groups.",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            },
+            "minItems": 1,
+            "maxItems": 1
+          },
+          "minItems": 1,
+          "maxItems": 1
+        },
+        "header": {
+          "type": "object",
+          "title": "Run Header",
+          "description": "General header information for the simulation run.",
+          "properties": {
+            "bIr": {
+              "type": "string",
+              "title": "IR Data Flag",
+              "description": "Indicates presence of an input record for reading."
+            },
+            "bBox": {
+              "type": "string",
+              "title": "Box Flag",
+              "description": "Indicates presence of box dimension data."
+            },
+            "bTop": {
+              "type": "string",
+              "title": "Topology Flag",
+              "description": "Indicates presence of topology data."
+            },
+            "bX": {
+              "type": "string",
+              "title": "Coordinates Flag",
+              "description": "Indicates presence of coordinate data."
+            },
+            "bV": {
+              "type": "string",
+              "title": "Velocity Flag",
+              "description": "Indicates presence of velocity data."
+            },
+            "bF": {
+              "type": "string",
+              "title": "Force Flag",
+              "description": "Indicates presence of force data."
+            },
+            "natoms": {
+              "type": "integer",
+              "title": "Number of Atoms",
+              "description": "Total number of atoms in the simulation."
+            },
+            "lambda": {
+              "type": "string",
+              "title": "Lambda",
+              "description": "Coupling parameter for free energy calculations or scaling interactions."
+            },
+            "buffer size": {
+              "type": "integer",
+              "title": "Buffer Size",
+              "description": "Size of buffer used for storing coordinate/velocity/force data."
+            }
+          }
+        },
+        "box (3x3)": {
+          "type": "array",
+          "title": "Box Matrix (3x3)",
+          "description": "Simulation box vectors in a 3x3 matrix.",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "box_rel (3x3)": {
+          "type": "array",
+          "title": "Relative Box Matrix (3x3)",
+          "description": "Box vectors relative to some reference, if used.",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "boxv (3x3)": {
+          "type": "array",
+          "title": "Box Velocity (3x3)",
+          "description": "Time derivatives of box vectors if the box is changing in time.",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "pres_prev (3x3)": {
+          "type": "array",
+          "title": "Previous Pressure Tensor (3x3)",
+          "description": "Pressure tensor from the previous step, stored for coupling continuity.",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "svir_prev (3x3)": {
+          "type": "array",
+          "title": "Previous Virial (3x3)",
+          "description": "Virial tensor from the previous step, used in pressure calculations.",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "fvir_prev (3x3)": {
+          "type": "array",
+          "title": "Previous Full Virial (3x3)",
+          "description": "Full virial tensor from the previous step, used for continuity in coupling.",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "nosehoover_xi": {
+          "type": "string",
+          "title": "Nose-Hoover Xi",
+          "description": "Variable associated with the Nose-Hoover thermostat chain."
+        },
+        "Group statistics": {
+          "type": "object",
+          "title": "Group Statistics",
+          "description": "Records of how many atoms belong to each relevant group used in the simulation.",
+          "properties": {
+            "T-Coupling": {
+              "type": "object",
+              "title": "Temperature Coupling Group",
+              "description": "Statistics about the group used for temperature coupling.",
+              "properties": {
+                "atoms": {
+                  "type": "array",
+                  "title": "Atom Indices",
+                  "description": "List of atom indices in this group.",
+                  "items": {
+                    "type": "integer"
+                  },
+                  "minItems": 2,
+                  "maxItems": 2
+                },
+                "total atoms": {
+                  "type": "integer",
+                  "title": "Total Atoms in Group",
+                  "description": "Number of atoms belonging to this temperature coupling group."
+                }
+              }
+            },
+            "Energy Mon.": {
+              "type": "object",
+              "title": "Energy Monitor Group",
+              "description": "Group used for energy monitoring or additional output.",
+              "properties": {
+                "atoms": {
+                  "type": "array",
+                  "title": "Atom Indices",
+                  "description": "List of atom indices in this group.",
+                  "items": {
+                    "type": "integer"
+                  },
+                  "minItems": 1,
+                  "maxItems": 1
+                },
+                "total atoms": {
+                  "type": "integer",
+                  "title": "Total Atoms in Group",
+                  "description": "Number of atoms belonging to this group."
+                }
+              }
+            },
+            "Acc. not used": {
+              "type": "object",
+              "title": "Acceleration Not Used",
+              "description": "Statistics for the group not subjected to acceleration.",
+              "properties": {
+                "atoms": {
+                  "type": "array",
+                  "title": "Atom Indices",
+                  "description": "List of atom indices in this group.",
+                  "items": {
+                    "type": "integer"
+                  },
+                  "minItems": 1,
+                  "maxItems": 1
+                },
+                "total atoms": {
+                  "type": "integer",
+                  "title": "Total Atoms in Group",
+                  "description": "Number of atoms in the group that does not use acceleration."
+                }
+              }
+            },
+            "Freeze": {
+              "type": "object",
+              "title": "Freeze Group",
+              "description": "Group of atoms that are frozen in some or all dimensions.",
+              "properties": {
+                "atoms": {
+                  "type": "array",
+                  "title": "Atom Indices",
+                  "description": "List of atom indices in this group.",
+                  "items": {
+                    "type": "integer"
+                  },
+                  "minItems": 1,
+                  "maxItems": 1
+                },
+                "total atoms": {
+                  "type": "integer",
+                  "title": "Total Atoms in Group",
+                  "description": "Number of frozen atoms in the group."
+                }
+              }
+            },
+            "User1": {
+              "type": "object",
+              "title": "User Group 1",
+              "description": "Custom user-defined group 1 for specialized statistics or manipulations.",
+              "properties": {
+                "atoms": {
+                  "type": "array",
+                  "title": "Atom Indices",
+                  "description": "List of atom indices in this user group.",
+                  "items": {
+                    "type": "integer"
+                  },
+                  "minItems": 1,
+                  "maxItems": 1
+                },
+                "total atoms": {
+                  "type": "integer",
+                  "title": "Total Atoms in Group",
+                  "description": "Number of atoms in this user-defined group."
+                }
+              }
+            },
+            "User2": {
+              "type": "object",
+              "title": "User Group 2",
+              "description": "Custom user-defined group 2 for specialized statistics or manipulations.",
+              "properties": {
+                "atoms": {
+                  "type": "array",
+                  "title": "Atom Indices",
+                  "description": "List of atom indices in this user group.",
+                  "items": {
+                    "type": "integer"
+                  },
+                  "minItems": 1,
+                  "maxItems": 1
+                },
+                "total atoms": {
+                  "type": "integer",
+                  "title": "Total Atoms in Group",
+                  "description": "Number of atoms in this user-defined group."
+                }
+              }
+            },
+            "VCM": {
+              "type": "object",
+              "title": "Center of Mass Group",
+              "description": "Group used to handle or remove center of mass motion.",
+              "properties": {
+                "atoms": {
+                  "type": "array",
+                  "title": "Atom Indices",
+                  "description": "List of atom indices in this group.",
+                  "items": {
+                    "type": "integer"
+                  },
+                  "minItems": 1,
+                  "maxItems": 1
+                },
+                "total atoms": {
+                  "type": "integer",
+                  "title": "Total Atoms in Group",
+                  "description": "Number of atoms used for center of mass calculations in this group."
+                }
+              }
+            },
+            "Compressed X": {
+              "type": "object",
+              "title": "Compressed Coordinates Group",
+              "description": "Specifies the group for which compressed coordinates might be written.",
+              "properties": {
+                "atoms": {
+                  "type": "array",
+                  "title": "Atom Indices",
+                  "description": "List of atom indices in this group.",
+                  "items": {
+                    "type": "integer"
+                  },
+                  "minItems": 1,
+                  "maxItems": 1
+                },
+                "total atoms": {
+                  "type": "integer",
+                  "title": "Total Atoms in Group",
+                  "description": "Number of atoms whose coordinates may be compressed."
+                }
+              }
+            },
+            "Or. Res. Fit": {
+              "type": "object",
+              "title": "Orientational Restraint Fit Group",
+              "description": "Group of atoms used for orientation restraint fitting or alignment.",
+              "properties": {
+                "atoms": {
+                  "type": "array",
+                  "title": "Atom Indices",
+                  "description": "List of atom indices in this group.",
+                  "items": {
+                    "type": "integer"
+                  },
+                  "minItems": 1,
+                  "maxItems": 1
+                },
+                "total atoms": {
+                  "type": "integer",
+                  "title": "Total Atoms in Group",
+                  "description": "Number of atoms used for orientation restraints or RMSD fitting."
+                }
+              }
+            },
+            "QMMM": {
+              "type": "object",
+              "title": "QM/MM Group",
+              "description": "Group of atoms under QM treatment in hybrid simulations.",
+              "properties": {
+                "atoms": {
+                  "type": "array",
+                  "title": "Atom Indices",
+                  "description": "List of atom indices in this QM/MM group.",
+                  "items": {
+                    "type": "integer"
+                  },
+                  "minItems": 1,
+                  "maxItems": 1
+                },
+                "total atoms": {
+                  "type": "integer",
+                  "title": "Total Atoms in Group",
+                  "description": "Number of atoms in the QM/MM group."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "system": {
+      "type": "object",
+      "title": "System Level Data",
+      "description": "Describes the overall system setup, such as water model and box dimensions.",
+      "properties": {
+        "water_model": {
+          "type": "string",
+          "title": "Water Model",
+          "description": "The water model used in the simulation (e.g., 'TIP3P', 'SPC/E')."
+        },
+        "box_size_and_shape": {
+          "type": "array",
+          "title": "Box Dimensions",
+          "description": "Size of the simulation box in x, y, z dimensions (in nm).",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 3,
+          "maxItems": 3
+        }
+      }
+    }
+  }
+}
