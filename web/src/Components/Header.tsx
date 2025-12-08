@@ -18,7 +18,6 @@ const Header = () => {
                     <Typography variant="h3" sx={{mt: "0.5em"}}>A tool to describe molecular dynamics simulations with powerful metadata</Typography>
                 </Stack>
                 <Box>
-                    { /* TODO: add actual links */}
                     <Tooltip title="Your profile">
                         <IconButton size="small" onClick={() => navigate("/profile")}>
                             <AccountCircle sx={{fontSize: "2em", color: "rgb(244, 125, 32)"}}/>
