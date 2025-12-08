@@ -1,3 +1,8 @@
+## GROMACS MetaDump
+# 
+# This docker-compose file deploys a local instance of GROMACS MetaDump. It can be used for development or testing purposes.
+#
+
 services:
   redis:
     image: redis:6-alpine
